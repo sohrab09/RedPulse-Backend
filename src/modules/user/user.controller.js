@@ -18,6 +18,9 @@ async function createUser(req, res, next) {
 async function getUsers(req, res, next) {
     try {
         const result = await userService.getUsers(req.query);
+
+        if (!result) throw new Error("Users not found");
+
         return successResponse({
             res,
             message: "Users retrieved successfully",
