@@ -12,6 +12,9 @@ const User = sequelize.define(
         fullName: {
             type: DataTypes.STRING,
             allowNull: false,
+            validate: {
+                len: [3, 100],
+            },
         },
         age: {
             type: DataTypes.INTEGER,
@@ -44,6 +47,28 @@ const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
+            validate: {
+                len: [11, 15],
+            },
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+            validate: {
+                isEmail: true,
+            },
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [6, 255],
+            },
+        },
+        role: {
+            type: DataTypes.ENUM("USER", "ADMIN"),
+            defaultValue: "USER",
         },
     },
     {
