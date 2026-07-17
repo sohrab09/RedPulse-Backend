@@ -20,6 +20,10 @@ const User = sequelize.define(
                 min: 18,
             },
         },
+        gender: {
+            type: DataTypes.ENUM("Male", "Female", "Others"),
+            allowNull: false,
+        },
         bloodGroup: {
             type: DataTypes.ENUM("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"),
             allowNull: false,

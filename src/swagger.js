@@ -19,6 +19,7 @@ const swaggerDocument = {
                     id: { type: "string", format: "uuid" },
                     fullName: { type: "string" },
                     age: { type: "integer", minimum: 18 },
+                    gender: { type: "string", enum: ["Male", "Female", "Others"], example: "Male" },
                     bloodGroup: { type: "string", enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] },
                     division: { type: "string" },
                     district: { type: "string" },
@@ -34,10 +35,11 @@ const swaggerDocument = {
             },
             CreateUserRequest: {
                 type: "object",
-                required: ["fullName", "age", "bloodGroup", "division", "district", "upazila", "union", "phoneNumber", "email", "password"],
+                required: ["fullName", "age", "gender", "bloodGroup", "division", "district", "upazila", "union", "phoneNumber", "email", "password"],
                 properties: {
                     fullName: { type: "string", minLength: 3 },
                     age: { type: "integer", minimum: 18 },
+                    gender: { type: "string", enum: ["Male", "Female", "Others"], example: "Male" },
                     bloodGroup: { type: "string", enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] },
                     division: { type: "string" },
                     district: { type: "string" },
@@ -81,6 +83,32 @@ const swaggerDocument = {
         },
     },
     paths: {
+        "/api/v1/auth/register": {
+            post: {
+                summary: "Register a new donor",
+                tags: ["Auth"],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: { $ref: "#/components/schemas/CreateUserRequest" },
+                        },
+                    },
+                },
+                responses: {
+                    201: {
+                        description: "User registered successfully",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ApiResponse" },
+                            },
+                        },
+                    },
+                    400: { description: "Validation error" },
+                    409: { description: "Phone number already exists" },
+                },
+            },
+        },
         "/api/v1/users": {
             post: {
                 summary: "Create a new user",

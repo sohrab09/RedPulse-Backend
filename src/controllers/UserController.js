@@ -20,6 +20,7 @@ exports.register = async (req, res, next) => {
         const {
             fullName,
             age,
+            gender,
             bloodGroup,
             division,
             district,
@@ -31,7 +32,7 @@ exports.register = async (req, res, next) => {
             role,
         } = req.body;
 
-        const requiredFields = [fullName, age, bloodGroup, division, district, upazila, union, phoneNumber, email, password];
+        const requiredFields = [fullName, age, gender, bloodGroup, division, district, upazila, union, phoneNumber, email, password];
         if (requiredFields.some((field) => field == null || field === "")) {
             throw new ApiError("All required fields must be provided", 400);
         }
@@ -51,6 +52,7 @@ exports.register = async (req, res, next) => {
         const user = await User.create({
             fullName,
             age: Number(age),
+            gender,
             bloodGroup,
             division,
             district,
