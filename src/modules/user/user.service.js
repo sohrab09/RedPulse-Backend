@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const userRepository = require("./user.repository");
 const ApiError = require("../../utils/apiError");
 const { getPagination, getPagingData } = require("../../utils/pagination");
@@ -6,6 +8,10 @@ async function createUser(payload) {
     const existing = await userRepository.findUserByPhone(payload.phoneNumber);
     if (existing) {
         throw new ApiError("Phone number already exists", 409);
+    }
+
+    if (payload.password) {
+        payload.password = await bcrypt.hash(payload.password, 10);
     }
 
     return userRepository.createUser(payload);
@@ -52,6 +58,10 @@ async function updateUser(id, payload) {
         }
     }
 
+    if (payload.password) {
+        payload.password = await bcrypt.hash(payload.password, 10);
+    }
+
     return userRepository.updateUser(user, payload);
 }
 
@@ -64,10 +74,38 @@ async function deleteUser(id) {
     return deleted;
 }
 
+async function login(payload) {
+    if (!payload.email && !payload.phoneNumber) {
+        throw new ApiError("Email or phone number is required", 400);
+    }
+
+    const user = await userRepository.findUserByEmailOrPhone(payload.email, payload.phoneNumber);
+    if (!user) {
+        throw new ApiError("User not found", 404);
+    }
+
+    const isMatch = await bcrypt.compare(payload.password, user.password);
+    if (!isMatch) {
+        throw new ApiError("Invalid credentials", 401);
+    }
+
+    const safeUser = user.toJSON ? user.toJSON() : user;
+    delete safeUser.password;
+
+    const token = jwt.sign(
+        { id: safeUser.id, email: safeUser.email, role: safeUser.role },
+        process.env.JWT_SECRET || "redpulse-secret",
+        { expiresIn: "7d" }
+    );
+
+    return { user: safeUser, token };
+}
+
 module.exports = {
     createUser,
     getUsers,
     getUserById,
     updateUser,
     deleteUser,
+    login,
 };

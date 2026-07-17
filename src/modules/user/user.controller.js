@@ -70,10 +70,25 @@ async function deleteUser(req, res, next) {
     }
 }
 
+async function login(req, res, next) {
+    try {
+        const user = await userService.login(req.body);
+        return successResponse({
+            res,
+            message: "Login successful",
+            data: user,
+            status: 200
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     createUser,
     getUsers,
     getUserById,
     updateUser,
     deleteUser,
+    login,
 };
