@@ -74,6 +74,11 @@ const User = sequelize.define(
             type: DataTypes.ENUM("USER", "ADMIN"),
             defaultValue: "USER",
         },
+        isAvailable: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
     },
     {
         tableName: "users",

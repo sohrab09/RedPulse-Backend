@@ -101,6 +101,20 @@ async function login(payload) {
     return { user: safeUser, token };
 }
 
+async function updateAvailability(id, payload) {
+    const user = await userRepository.findUserById(id);
+
+    if (!user) {
+        throw new ApiError("User not found", 404);
+    }
+
+    const updatedUser = await userRepository.updateUser(user, {
+        isAvailable: payload.isAvailable,
+    });
+
+    return updatedUser;
+}
+
 module.exports = {
     createUser,
     getUsers,
@@ -108,4 +122,5 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
+    updateAvailability,
 };

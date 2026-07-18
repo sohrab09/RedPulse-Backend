@@ -1,5 +1,4 @@
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-const genderOptions = ["Male", "Female", "Others"];
 const phoneRegex = /^\+?[0-9]{10,15}$/;
 
 function isString(value) {
@@ -19,10 +18,6 @@ function validateCreatePayload(body) {
 
     if (!bloodGroups.includes(body.bloodGroup)) {
         errors.push({ field: "bloodGroup", message: "bloodGroup is required and must be a valid blood group" });
-    }
-
-    if (!genderOptions.includes(body.gender)) {
-        errors.push({ field: "gender", message: "gender is required and must be one of Male, Female, or Others" });
     }
 
     if (!isString(body.division)) {
@@ -75,12 +70,6 @@ function validateUpdatePayload(body) {
         }
     }
 
-    if (body.gender != null) {
-        if (!genderOptions.includes(body.gender)) {
-            errors.push({ field: "gender", message: "gender must be one of Male, Female, or Others" });
-        }
-    }
-
     if (body.division != null && !isString(body.division)) {
         errors.push({ field: "division", message: "division must be a valid string" });
     }
@@ -104,9 +93,22 @@ function validateUpdatePayload(body) {
     return errors;
 }
 
+function validateAvailabilityPayload(body) {
+    const errors = [];
+
+    if (typeof body.isAvailable !== "boolean") {
+        errors.push({
+            field: "isAvailable",
+            message: "isAvailable is required and must be a boolean",
+        });
+    }
+
+    return errors;
+}
+
 module.exports = {
     bloodGroups,
-    genderOptions,
     validateCreatePayload,
     validateUpdatePayload,
+    validateAvailabilityPayload
 };

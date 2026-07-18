@@ -84,6 +84,24 @@ async function login(req, res, next) {
     }
 }
 
+async function updateAvailability(req, res, next) {
+
+    try {
+        const user = await userService.updateAvailability(
+            req.user.id,
+            req.body
+        );
+
+        return successResponse({
+            res,
+            message: "Availability updated successfully",
+            data: user,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     createUser,
     getUsers,
@@ -91,4 +109,5 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
+    updateAvailability
 };

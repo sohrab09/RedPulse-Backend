@@ -38,6 +38,10 @@ async function findUserByEmailOrPhone(email, phoneNumber) {
     });
 }
 
+async function updateUser(user, payload) {
+    return user.update(payload);
+}
+
 module.exports = {
     createUser,
     findUserById,
