@@ -1,5 +1,6 @@
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const phoneRegex = /^\+?[0-9]{10,15}$/;
+const validGenders = ["Male", "Female", "Other"];  // ✅ exact case
 
 function isString(value) {
     return typeof value === "string" && value.trim().length > 0;
@@ -38,6 +39,10 @@ function validateCreatePayload(body) {
 
     if (!isString(body.phoneNumber) || !phoneRegex.test(body.phoneNumber)) {
         errors.push({ field: "phoneNumber", message: "phoneNumber is required and must be a valid phone format" });
+    }
+
+    if (!isString(body.gender) || !validGenders.includes(body.gender)) {
+        errors.push({ field: "gender", message: "gender is required and must be Male, Female, or Other" });
     }
 
     return errors;
@@ -84,6 +89,12 @@ function validateUpdatePayload(body) {
 
     if (body.union != null && !isString(body.union)) {
         errors.push({ field: "union", message: "union must be a valid string" });
+    }
+
+    if (body.gender != null) {
+        if (!isString(body.gender) || !validGenders.includes(body.gender)) {
+            errors.push({ field: "gender", message: "gender must be Male, Female, or Other" });
+        }
     }
 
     if (body.phoneNumber != null && !phoneRegex.test(body.phoneNumber)) {
