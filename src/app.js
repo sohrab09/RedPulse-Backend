@@ -5,6 +5,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger");
 const errorMiddleware = require("./middlewares/error.middleware");
 const userRoutes = require("./modules/user/user.routes");
+const contactRequestRoutes = require("./modules/contact/contact-request.routes");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 const apiPrefix = "/api/v1";
 
 app.use(`${apiPrefix}`, userRoutes);
+app.use(`${apiPrefix}`, contactRequestRoutes);
 app.use(`${apiPrefix}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(errorMiddleware);
 
