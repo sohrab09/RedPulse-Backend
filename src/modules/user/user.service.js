@@ -17,7 +17,7 @@ async function createUser(payload) {
     return userRepository.createUser(payload);
 }
 
-async function getUsers(query) {
+async function getPublicUsers(query) {
     const { page = 1, limit = 10, bloodGroup, division, district } = query;
     const { limit: pageLimit, offset, page: currentPage } = getPagination(page, limit);
 
@@ -62,6 +62,18 @@ async function getUserById(id) {
     }
 
     return user;
+}
+
+async function getMyProfile(id) {
+    const user = await userRepository.findUserById(id);
+    if (!user) {
+        throw new ApiError("User not found", 404);
+    }
+
+    const safeUser = user.toJSON ? user.toJSON() : user;
+    delete safeUser.password;
+
+    return safeUser;
 }
 
 async function updateUser(id, payload) {
@@ -136,8 +148,9 @@ async function updateAvailability(id, payload) {
 
 module.exports = {
     createUser,
-    getUsers,
+    getPublicUsers,
     getUserById,
+    getMyProfile,
     updateUser,
     deleteUser,
     login,

@@ -15,9 +15,9 @@ async function createUser(req, res, next) {
     }
 }
 
-async function getUsers(req, res, next) {
+async function getPublicUsers(req, res, next) {
     try {
-        const result = await userService.getUsers(req.query);
+        const result = await userService.getPublicUsers(req.query);
 
         if (!result) throw new Error("Users not found");
 
@@ -38,6 +38,19 @@ async function getUserById(req, res, next) {
         return successResponse({
             res,
             message: "User retrieved successfully",
+            data: user,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function getMyProfile(req, res, next) {
+    try {
+        const user = await userService.getMyProfile(req.user.id);
+        return successResponse({
+            res,
+            message: "Profile retrieved successfully",
             data: user,
         });
     } catch (error) {
@@ -105,8 +118,9 @@ async function updateAvailability(req, res, next) {
 
 module.exports = {
     createUser,
-    getUsers,
+    getPublicUsers,
     getUserById,
+    getMyProfile,
     updateUser,
     deleteUser,
     login,

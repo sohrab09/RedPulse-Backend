@@ -8,7 +8,8 @@ const router = express.Router();
 
 router.post("/", validateRequest(validateCreatePayload), userController.createUser);
 router.post("/login", userController.login);
-router.get("/", userController.getUsers);
+router.get("/", userController.getPublicUsers);
+router.get("/me/profile", auth, userController.getMyProfile);
 router.get("/:id", auth, userController.getUserById);
 router.patch("/:id", auth, validateRequest(validateUpdatePayload), userController.updateUser);
 router.delete("/:id", auth, userController.deleteUser);
