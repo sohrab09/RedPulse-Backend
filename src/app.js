@@ -15,8 +15,10 @@ app.get("/", (req, res) => {
     res.json({ success: true, message: "API Running..." });
 });
 
-app.use("/api/v1/users", userRoutes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const apiPrefix = "/api/v1";
+
+app.use(`${apiPrefix}`, userRoutes);
+app.use(`${apiPrefix}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(errorMiddleware);
 
 module.exports = app;

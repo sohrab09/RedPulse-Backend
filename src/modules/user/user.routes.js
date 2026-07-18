@@ -6,14 +6,21 @@ const { validateCreatePayload, validateUpdatePayload, validateAvailabilityPayloa
 
 const router = express.Router();
 
-router.post("/", validateRequest(validateCreatePayload), userController.createUser);
-router.post("/login", userController.login);
-router.get("/", userController.getPublicUsers);
-router.get("/me/profile", auth, userController.getMyProfile);
-router.get("/:id", auth, userController.getUserById);
-router.patch("/:id", auth, validateRequest(validateUpdatePayload), userController.updateUser);
-router.delete("/:id", auth, userController.deleteUser);
+// Auth Routes
+router.post("/auth/register", validateRequest(validateCreatePayload), userController.createUser);
+router.post("/auth/login", userController.login);
 
-router.patch("/me/availability", auth, validateRequest(validateAvailabilityPayload), userController.updateAvailability);
+// Public Donor Routes
+router.get("/public/donors", userController.getPublicUsers);
+
+// User Routes
+router.get("/users/me/profile", auth, userController.getMyProfile);
+router.patch("/users/me/availability", auth, validateRequest(validateAvailabilityPayload), userController.updateAvailability);
+
+
+router.get("/users/:id", auth, userController.getUserById);
+router.patch("/users/:id", auth, validateRequest(validateUpdatePayload), userController.updateUser);
+router.delete("/users/:id", auth, userController.deleteUser);
+
 
 module.exports = router;
