@@ -46,6 +46,7 @@ async function getPublicUsers(query) {
         upazila: user.upazila,
         isAvailable: user.isAvailable,
         isEmailVerified: user.isEmailVerified,
+        lastSeen: user.lastSeen,
     }));
 
     return {

@@ -110,7 +110,10 @@ async function updateAvailability(req, res, next) {
     try {
         const user = await userService.updateAvailability(
             req.user.id,
-            req.body
+            {
+                ...req.body,
+                lastSeen: new Date(),
+            }
         );
 
         return successResponse({
