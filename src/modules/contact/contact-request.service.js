@@ -3,7 +3,36 @@ const userRepository = require("../user/user.repository");
 const ApiError = require("../../utils/apiError");
 const ContactRequest = require("./contact-request.model");
 
-async function createContactRequest(senderId, receiverId, message = "") {
+// ✅ ADD: cleanPayload function definition
+function cleanPayload(payload) {
+    const cleaned = {};
+    for (const [key, value] of Object.entries(payload)) {
+        cleaned[key] = value === "" ? null : value;
+    }
+    return cleaned;
+}
+
+// ❌ REMOVE this line: const cleaned = cleanPayload(payload);
+
+async function createContactRequest(payload) {
+    const {
+        senderId,
+        receiverId,
+        message,
+        hospitalName,
+        hospitalAddress,
+        bloodGroupNeeded,
+        unitsNeeded,
+        urgency,
+        patientName,
+        patientAge,
+        patientGender,
+        reason,
+        reasonOther,
+        requiredDate,
+        contactNumber,
+        additionalNotes,
+    } = payload;
 
     if (!senderId) {
         throw new ApiError("Please register or login for sending a contact request", 400);
@@ -30,15 +59,48 @@ async function createContactRequest(senderId, receiverId, message = "") {
         throw new ApiError("You already have a pending request to this donor", 409);
     }
 
+    // ✅ CORRECT: cleanPayload called here, inside function
+    const cleaned = cleanPayload({
+        message,
+        hospitalName,
+        hospitalAddress,
+        bloodGroupNeeded,
+        unitsNeeded,
+        urgency,
+        patientName,
+        patientAge,
+        patientGender,
+        reason,
+        reasonOther,
+        requiredDate,
+        contactNumber,
+        additionalNotes,
+    });
+
     const contactRequest = await contactRequestRepository.createContactRequest({
         senderId,
         receiverId,
-        message,
+        message: cleaned.message,
+        hospitalName: cleaned.hospitalName,
+        hospitalAddress: cleaned.hospitalAddress,
+        bloodGroupNeeded: cleaned.bloodGroupNeeded,
+        unitsNeeded: cleaned.unitsNeeded || 1,
+        urgency: cleaned.urgency || "MEDIUM",
+        patientName: cleaned.patientName,
+        patientAge: cleaned.patientAge,
+        patientGender: cleaned.patientGender,
+        reason: cleaned.reason,
+        reasonOther: cleaned.reasonOther,
+        requiredDate: cleaned.requiredDate,
+        contactNumber: cleaned.contactNumber,
+        additionalNotes: cleaned.additionalNotes,
         status: "PENDING",
     });
 
     return contactRequest;
 }
+
+// ... rest same
 
 async function getMyContactRequests(userId) {
     const requests = await ContactRequest.findAll({

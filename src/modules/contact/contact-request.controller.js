@@ -3,7 +3,6 @@ const { successResponse } = require("../../utils/response");
 
 async function createContactRequest(req, res, next) {
     try {
-        // Check if user is authenticated
         if (!req.user || !req.user.id) {
             return res.status(401).json({
                 success: false,
@@ -12,14 +11,26 @@ async function createContactRequest(req, res, next) {
             });
         }
 
-        const { receiverId, message } = req.body;
         const senderId = req.user.id;
 
-        const request = await contactRequestService.createContactRequest(
+        const request = await contactRequestService.createContactRequest({
             senderId,
-            receiverId,
-            message
-        );
+            receiverId: req.body.receiverId,
+            message: req.body.message,
+            hospitalName: req.body.hospitalName,
+            hospitalAddress: req.body.hospitalAddress,
+            bloodGroupNeeded: req.body.bloodGroupNeeded,
+            unitsNeeded: req.body.unitsNeeded,
+            urgency: req.body.urgency,
+            patientName: req.body.patientName,
+            patientAge: req.body.patientAge,
+            patientGender: req.body.patientGender,
+            reason: req.body.reason,
+            reasonOther: req.body.reasonOther,
+            requiredDate: req.body.requiredDate,
+            contactNumber: req.body.contactNumber,
+            additionalNotes: req.body.additionalNotes,
+        });
 
         return successResponse({
             res,
@@ -32,11 +43,9 @@ async function createContactRequest(req, res, next) {
     }
 }
 
-
 async function getMyContactRequests(req, res, next) {
     try {
         const requests = await contactRequestService.getMyContactRequests(req.user.id);
-
         return successResponse({
             res,
             message: "Contact requests retrieved successfully",
@@ -50,7 +59,6 @@ async function getMyContactRequests(req, res, next) {
 async function getMySentRequests(req, res, next) {
     try {
         const requests = await contactRequestService.getMySentRequests(req.user.id);
-
         return successResponse({
             res,
             message: "Sent requests retrieved successfully",
