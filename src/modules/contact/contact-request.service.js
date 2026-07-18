@@ -4,6 +4,11 @@ const ApiError = require("../../utils/apiError");
 const ContactRequest = require("./contact-request.model");
 
 async function createContactRequest(senderId, receiverId, message = "") {
+
+    if (!senderId) {
+        throw new ApiError("Please register or login for sending a contact request", 400);
+    }
+
     if (senderId === receiverId) {
         throw new ApiError("You cannot contact yourself", 400);
     }

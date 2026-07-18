@@ -3,6 +3,15 @@ const { successResponse } = require("../../utils/response");
 
 async function createContactRequest(req, res, next) {
     try {
+        // Check if user is authenticated
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
+                success: false,
+                message: "Authentication required. Please login to send contact requests.",
+                data: null
+            });
+        }
+
         const { receiverId, message } = req.body;
         const senderId = req.user.id;
 
@@ -22,6 +31,7 @@ async function createContactRequest(req, res, next) {
         next(error);
     }
 }
+
 
 async function getMyContactRequests(req, res, next) {
     try {
