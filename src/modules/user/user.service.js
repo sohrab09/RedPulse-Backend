@@ -22,6 +22,7 @@ async function getUsers(query) {
     const { limit: pageLimit, offset, page: currentPage } = getPagination(page, limit);
 
     const where = {};
+
     if (bloodGroup) where.bloodGroup = bloodGroup;
     if (division) where.division = division;
     if (district) where.district = district;
@@ -33,7 +34,25 @@ async function getUsers(query) {
         order: [["created_at", "DESC"]],
     });
 
-    return getPagingData(users, currentPage, pageLimit);
+    const publicUsers = users.rows.map((user) => ({
+        id: user.id,
+        fullName: user.fullName,
+        avatar: user.avatar,
+        bloodGroup: user.bloodGroup,
+        age: user.age,
+        gender: user.gender,
+        division: user.division,
+        district: user.district,
+        upazila: user.upazila,
+        isAvailable: user.isAvailable,
+    }));
+
+    return {
+        totalItems: users.count,
+        users: publicUsers,
+        totalPages: Math.ceil(users.count / pageLimit),
+        currentPage,
+    };
 }
 
 async function getUserById(id) {

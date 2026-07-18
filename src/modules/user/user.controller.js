@@ -25,6 +25,7 @@ async function getUsers(req, res, next) {
             res,
             message: "Users retrieved successfully",
             data: result,
+            status: 200
         });
     } catch (error) {
         next(error);

@@ -3,6 +3,7 @@ function successResponse({ res, status = 200, message, data }) {
         success: true,
         message,
         data,
+        status,
     });
 }
 
