@@ -1,5 +1,12 @@
 const userService = require("./user.service");
 const { successResponse } = require("../../utils/response");
+const { sendVerificationEmail } = require("../../service/email.service");
+const ApiError = require("../../utils/apiError");
+const User = require("./user.model");
+
+function generateVerificationCode() {  // ✅
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 async function createUser(req, res, next) {
     try {
@@ -116,6 +123,79 @@ async function updateAvailability(req, res, next) {
     }
 }
 
+async function sendVerificationEmailCode(req, res, next) {
+    try {
+        const userId = req.user.id;
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            throw new ApiError("User not found", 404);
+        }
+
+        if (user.emailVerificationExpires && new Date() < new Date(user.emailVerificationExpires)) {
+            const remaining = Math.ceil((new Date(user.emailVerificationExpires) - new Date()) / 1000 / 60);
+            throw new ApiError(`Please wait ${remaining} minutes before requesting a new code`, 429);
+        }
+
+        const code = generateVerificationCode();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+        await user.update({
+            emailVerificationCode: code,
+            emailVerificationExpires: expiresAt,
+        });
+
+        await sendVerificationEmail(user.email, code);
+
+        return successResponse({
+            res,
+            message: "Verification code sent to your email",
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// ✅ FIXED: Verify email with code
+async function verifyEmail(req, res, next) {
+    try {
+        const { code } = req.body;
+        const userId = req.user.id;
+
+        // Fetch actual Sequelize instance
+        const user = await User.findByPk(userId);
+        if (!user) {
+            throw new ApiError("User not found", 404);
+        }
+
+        if (!user.emailVerificationCode) {
+            throw new ApiError("No verification code found. Please request a new one.", 400);
+        }
+
+        if (new Date(user.emailVerificationExpires) < new Date()) {
+            throw new ApiError("Verification code expired. Please request a new one.", 400);
+        }
+
+        if (user.emailVerificationCode !== code) {
+            throw new ApiError("Invalid verification code", 400);
+        }
+
+        await user.update({
+            isEmailVerified: true,
+            emailVerificationCode: null,
+            emailVerificationExpires: null,
+        });
+
+        return successResponse({
+            res,
+            message: "Email verified successfully",
+            data: { isEmailVerified: true },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     createUser,
     getPublicUsers,
@@ -124,5 +204,7 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
-    updateAvailability
+    updateAvailability,
+    sendVerificationEmailCode,
+    verifyEmail,
 };

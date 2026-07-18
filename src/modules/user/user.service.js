@@ -45,6 +45,7 @@ async function getPublicUsers(query) {
         district: user.district,
         upazila: user.upazila,
         isAvailable: user.isAvailable,
+        isEmailVerified: user.isEmailVerified,
     }));
 
     return {

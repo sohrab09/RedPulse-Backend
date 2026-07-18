@@ -12,16 +12,12 @@ const User = sequelize.define(
         fullName: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                len: [3, 100],
-            },
+            validate: { len: [3, 100] },
         },
         age: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            validate: {
-                min: 18,
-            },
+            validate: { min: 18 },
         },
         gender: {
             type: DataTypes.ENUM("Male", "Female", "Others"),
@@ -51,24 +47,18 @@ const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
-            validate: {
-                len: [11, 15],
-            },
+            validate: { len: [11, 15] },
         },
         email: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
-            validate: {
-                isEmail: true,
-            },
+            validate: { isEmail: true },
         },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                len: [6, 255],
-            },
+            validate: { len: [6, 255] },
         },
         role: {
             type: DataTypes.ENUM("USER", "ADMIN"),
@@ -78,6 +68,23 @@ const User = sequelize.define(
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
+        },
+        lastSeen: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        isEmailVerified: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        emailVerificationCode: {
+            type: DataTypes.STRING(6),
+            allowNull: true,
+        },
+        emailVerificationExpires: {
+            type: DataTypes.DATE,
+            allowNull: true,
         },
     },
     {

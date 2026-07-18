@@ -22,5 +22,8 @@ router.get("/users/:id", auth, userController.getUserById);
 router.patch("/users/:id", auth, validateRequest(validateUpdatePayload), userController.updateUser);
 router.delete("/users/:id", auth, userController.deleteUser);
 
+router.post("/users/me/send-verification", auth, userController.sendVerificationEmailCode);
+router.post("/users/me/verify-email", auth, userController.verifyEmail);
+
 
 module.exports = router;
